@@ -1,0 +1,23 @@
+package com.finance.dispatch.worker.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+import java.math.BigDecimal;
+
+@Data
+public class GoldPriceResponse {
+
+    @JsonProperty("price")
+    private BigDecimal price;
+
+    @JsonProperty("symbol")
+    private String symbol;
+
+    @JsonProperty("updated)at")
+    private String updatedAt;
+
+    @JsonProperty("currency_symbol")
+    private String currencySymbol;
+
+}
