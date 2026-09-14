@@ -15,6 +15,9 @@ public class Application {
 }
 
 /**
+ * server: thcrypto
+ * cron: thcrypto
+ * db: thdevops
  * Test
  * Apply Telegram
  *
