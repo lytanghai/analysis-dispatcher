@@ -1,6 +1,6 @@
 spring:
   application:
-    name: dispatch.worker
+    name: analysis-dispatcher
   jackson:
     property-naming-strategy: SNAKE_CASE
     time-zone: Asia/Phnom_Penh
