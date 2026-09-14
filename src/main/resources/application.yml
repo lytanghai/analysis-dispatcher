@@ -35,6 +35,15 @@ custom:
           validate-after-inactivity: 2000ms
           evict-idle-connections: 30000ms
 
+app:
+  base-url: https://analysis-dispatcher.onrender.com
+
+telegram:
+  bot:
+    token: ${bot_token}
+    username: ${bot_username}
+    webhook-path: /telegram/webhook
+
 public-url:
   xau-price: https://api.gold-api.com/price/XAU
   forex-factory: https://nfs.faireconomy.media/ff_calendar_thisweek.json
