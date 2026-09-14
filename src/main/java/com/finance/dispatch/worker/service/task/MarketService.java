@@ -4,7 +4,6 @@ import com.finance.dispatch.worker.config.properties.PublicUrlProperties;
 import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.dto.response.GoldPriceResponse;
 import com.finance.dispatch.worker.entity.MarketHistory;
-import com.finance.dispatch.worker.exception.DatabaseException;
 import com.finance.dispatch.worker.exception.LogicException;
 import com.finance.dispatch.worker.exception.ServerException;
 import com.finance.dispatch.worker.repository.MarketHistoryRepository;
@@ -46,32 +45,44 @@ public class MarketService {
 
         log.info("[cron] onTask_TrackingGoldPrice {} executed for {}", type, date);
         GoldPriceResponse goldPriceResponse = retrieveGoldPrice();
+        var goldPrice = goldPriceResponse.getPrice();
 
         if(TypeConstant.OPENED.equals(type)){
-
             MarketHistory marketHistory = MarketHistory.builder()
                     .date(date)
+                    .opened(goldPrice)
                     .createdAt(LocalDateTime.now())
-                    .opened(goldPriceResponse.getPrice())
                     .symbol(goldPriceResponse.getSymbol())
                     .build();
 
-            marketHistoryRepository.save(marketHistory);
-            log.info("{} saved market history", type);
+            try {
+                marketHistoryRepository.save(marketHistory);
+                log.info("{} saved market history", type);
+            } catch (Exception e) {
+                log.error("Failed to save market history", e.getMessage());
+            }
 
         } else if(TypeConstant.CLOSED.equals(type)){
             MarketHistory marketHistory = marketHistoryRepository.findByDate(date);
 
             if(Objects.isNull(marketHistory)){
-                throw new DatabaseException("Market Record is not found " + date);
+                log.error("Market History not found");
+                return;
+            }
+            var openedPrice = marketHistory.getOpened();
+
+            if(Objects.isNull(openedPrice)){
+                marketHistoryRepository.delete(marketHistory);
+                log.info("Deleted market history -> existing record will be deleted {}", date);
+                return;
             }
 
-            marketHistory.setClosed(goldPriceResponse.getPrice());
+            marketHistory.setClosed(goldPrice);
             marketHistory.setUpdatedAt(LocalDateTime.now());
-            marketHistory.setPriceChange(marketHistory.getClosed().subtract(marketHistory.getOpened()));
+            marketHistory.setPriceChange(marketHistory.getClosed().subtract(openedPrice));
 
             marketHistoryRepository.save(marketHistory);
-
+            log.info("{} saved on existing market history {}", type, date);
         } else {
             throw new LogicException("Type " + type + " not found ");
         }
