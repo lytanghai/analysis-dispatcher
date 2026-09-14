@@ -5,9 +5,9 @@ spring:
     property-naming-strategy: SNAKE_CASE
     time-zone: Asia/Phnom_Penh
   datasource:
-    url: xxxx
-    username: xxxxx
-    password: xxxxx
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:

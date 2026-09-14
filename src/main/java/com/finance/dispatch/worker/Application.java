@@ -17,7 +17,5 @@ public class Application {
 /**
  * Test
  * Apply Telegram
- *jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres
- * postgres.bavvydtynqhlaiijignh
  *
  * */
