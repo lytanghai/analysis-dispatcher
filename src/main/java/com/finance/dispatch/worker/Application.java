@@ -21,4 +21,10 @@ public class Application {
  * Test
  * Apply Telegram
  *
+ * Telegram url
+ * https://api.telegram.org/bot6146637472:x/deleteWebhook
+ * https://api.telegram.org/bot6146637472:x/getUpdates
+ * https://api.telegram.org/bot6146637472:x/status
+ * https://api.telegram.org/bot6146637472:x/setWebhook?url=https://analysis-dispatcher.onrender.com/telegram/webhook
+ *
  * */
