@@ -1,12 +1,10 @@
 package com.finance.dispatch.worker.service;
 
-import com.finance.dispatch.worker.config.component.TelegramOnSentComponent;
 import com.finance.dispatch.worker.config.properties.TelegramProperties;
 import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Map;
 
@@ -15,7 +13,6 @@ import java.util.Map;
 @Slf4j
 public class TelegramService {
 
-    private final TelegramOnSentComponent telegramOnSentComponent;
     private final TelegramProperties telegramProperties;
     private final RestClientHttpUtils restClientHttpUtils;
 
@@ -26,15 +23,6 @@ public class TelegramService {
         );
 
         this.post("/sendMessage", body);
-    }
-
-    public void handleUpdate(Update update) throws Exception {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            String chatId = update.getMessage().getChatId().toString();
-            String reply = processCommand(chatId, update.getMessage().getText());
-
-            telegramOnSentComponent.send(chatId, reply);
-        }
     }
 
     private String processCommand(String chatId, String command) throws Exception {
