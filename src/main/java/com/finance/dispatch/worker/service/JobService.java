@@ -57,10 +57,15 @@ public class JobService {
             throw new DatabaseException(ResponseCode.FAILED_TO_CREATE, e.getMessage());
         }
 
-        return jobMapper.toMapCreateNewJobResponse(
-                newScheduledJob,
-                DateTimeUtils.convert(newScheduledJob.getCreatedAt())
-        );
+
+        JobResponse jobResponse = new JobResponse();
+        jobResponse.setId(newScheduledJob.getId());
+        jobResponse.setJobName(jobName);
+        jobResponse.setCronExpression(newScheduledJob.getCronExpression());
+        jobResponse.setEnabled(newScheduledJob.getEnabled());
+        jobResponse.setCreatedAt(newScheduledJob.getCreatedAt());
+
+        return jobResponse;
     }
 
     @Transactional
