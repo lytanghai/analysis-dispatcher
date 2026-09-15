@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.management.ManagementFactory;
+import java.time.LocalDateTime;
+
 @RestController
 @Slf4j
 @RequestMapping("/public")
@@ -32,6 +34,7 @@ public class PublicController {
     }
 
     public SystemHealth checkSystemHealth() {
+        log.info("Current Date: {}", LocalDateTime.now());
         Runtime runtime = Runtime.getRuntime();
 
         // Force garbage collection for more accurate memory readings
