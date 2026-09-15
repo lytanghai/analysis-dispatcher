@@ -2,10 +2,12 @@ package com.finance.dispatch.worker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
+@ConfigurationPropertiesScan
 public class Application {
 
 	public static void main(String[] args) {
@@ -22,9 +24,9 @@ public class Application {
  * Apply Telegram
  *
  * Telegram url
+ * https://api.telegram.org/bot6146637472:x/status
  * https://api.telegram.org/bot6146637472:x/deleteWebhook
  * https://api.telegram.org/bot6146637472:x/getUpdates
- * https://api.telegram.org/bot6146637472:x/status
  * https://api.telegram.org/bot6146637472:x/setWebhook?url=https://analysis-dispatcher.onrender.com/telegram/webhook
  *
  * */

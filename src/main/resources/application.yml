@@ -1,13 +1,15 @@
 spring:
+#  profiles:
+#    active: local
   application:
     name: analysis-dispatcher
   jackson:
     property-naming-strategy: SNAKE_CASE
     time-zone: Asia/Phnom_Penh
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${db_url}
+    username: ${db_username}
+    password: ${db_password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -35,14 +37,18 @@ custom:
           validate-after-inactivity: 2000ms
           evict-idle-connections: 30000ms
 
-app:
-  base-url: https://analysis-dispatcher.onrender.com
-
 telegram:
   bot:
+    enabled: ${bot_enabled}
     token: ${bot_token}
     username: ${bot_username}
-    webhook-path: /telegram/webhook
+    chat-id: ${chat_id}
+    app-webhook-url: ${app_webhook_url}
+
+    telegram-url: https://api.telegram.org/bot
+    delete-webhook: /deleteWebhook
+    update-webhook: /getUpdates
+    set-webhook: /setWebhook?url=
 
 public-url:
   xau-price: https://api.gold-api.com/price/XAU

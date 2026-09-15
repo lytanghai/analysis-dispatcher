@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -51,6 +52,8 @@ public class MarketService {
             MarketHistory marketHistory = MarketHistory.builder()
                     .date(date)
                     .opened(goldPrice)
+                    .closed(BigDecimal.ZERO)
+                    .priceChange(BigDecimal.ZERO)
                     .createdAt(LocalDateTime.now())
                     .symbol(goldPriceResponse.getSymbol())
                     .build();
@@ -59,7 +62,7 @@ public class MarketService {
                 marketHistoryRepository.save(marketHistory);
                 log.info("{} saved market history", type);
             } catch (Exception e) {
-                log.error("Failed to save market history", e.getMessage());
+                log.error("Failed to save market history: {}", e.getMessage());
             }
 
         } else if(TypeConstant.CLOSED.equals(type)){

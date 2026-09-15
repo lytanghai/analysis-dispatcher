@@ -13,9 +13,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,24 +28,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class SchedulerService {
+
+    private static final String TIME_ZONE = "Asia/Phnom_Penh";
+
     private final TaskScheduler taskScheduler;
     private final MarketService marketService;
     private final SchedulerConfigService schedulerConfigService;
     private final MarketNewsCacheService marketNewsCacheService;
 
-    private final Map<Long, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
+    private final Map<Long, ScheduledFuture<?>> scheduledTasks =
+            new ConcurrentHashMap<>();
 
     private volatile String currentConfigHash;
 
     @PostConstruct
     public void initialize() {
         log.info("Initializing dynamic scheduler");
-
         refreshSchedules();
     }
 
     @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
     public void checkForConfigurationChanges() {
+        log.info("Checking for scheduler configuration changes");
         refreshSchedules();
     }
 
@@ -68,21 +74,18 @@ public class SchedulerService {
     private void reconcileSchedules(List<ScheduledJob> jobs) {
 
         Map<Long, ScheduledJob> newJobs = jobs.stream()
-            .collect(Collectors.toMap(
-                    ScheduledJob::getId,
-                    Function.identity()
-            ));
+                .collect(Collectors.toMap(
+                        ScheduledJob::getId,
+                        Function.identity()
+                ));
 
-        // Remove jobs that no longer exist.
-        scheduledTasks.keySet().removeIf(jobId -> {
-            if (newJobs.containsKey(jobId)) {
-                return false;
+        // Cancel jobs that no longer exist.
+        for (Long jobId : new ArrayList<>(scheduledTasks.keySet())) {
+
+            if (!newJobs.containsKey(jobId)) {
+                cancelJob(jobId);
             }
-
-            cancelJob(jobId);
-
-            return true;
-        });
+        }
 
         // Schedule/update jobs.
         for (ScheduledJob job : jobs) {
@@ -95,20 +98,21 @@ public class SchedulerService {
         cancelJob(job.getId());
 
         try {
-            CronTrigger trigger = new CronTrigger(job.getCronExpression());
+
+            CronTrigger trigger = new CronTrigger(job.getCronExpression(), TimeZone.getTimeZone(TIME_ZONE));
+
             ScheduledFuture<?> future = taskScheduler.schedule(() -> executeJob(job), trigger);
 
             scheduledTasks.put(job.getId(), future);
 
-            log.info(
-                    "Scheduled job. id={}, name={}, cron={}",
+            log.info("Scheduled job. id={}, name={}, cron={}, timezone={}",
                     job.getId(),
                     job.getJobName(),
-                    job.getCronExpression()
+                    job.getCronExpression(),
+                    TIME_ZONE
             );
 
         } catch (Exception e) {
-
             log.error("Failed to schedule job. id={}, name={}, cron={}",
                     job.getId(),
                     job.getJobName(),
@@ -124,37 +128,30 @@ public class SchedulerService {
 
         if (future != null) {
             future.cancel(false);
-
-            log.info("Cancelled scheduled job. id={}",
-                    jobId
-            );
+            log.info("Cancelled scheduled job. id={}", jobId);
         }
     }
 
     private void executeJob(ScheduledJob job) {
-        log.info("Executing scheduled job. id={}, name={}",
-                job.getId(),
-                job.getJobName()
-        );
-
+        log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
         try {
             switch (job.getJobName()) {
-
-                case "XAU_OPEN_MARKET" -> {
-                    marketService.onTask_TrackingGoldPrice(TypeConstant.OPENED);
-                }
-
-                case "XAU_CLOSE_MARKET" -> {
-                    marketService.onTask_TrackingGoldPrice(TypeConstant.CLOSED);
-                }
-
-                case "MARKET_NEWS" -> {
-                    marketNewsCacheService.onTask_RetrievingMarketNews();
-                }
-
-                default -> {
-                    // do nothing
-                }
+                case "XAU_OPEN_MARKET" ->
+                        marketService.onTask_TrackingGoldPrice(
+                                TypeConstant.OPENED
+                        );
+                case "XAU_CLOSE_MARKET" ->
+                        marketService.onTask_TrackingGoldPrice(
+                                TypeConstant.CLOSED
+                        );
+                case "MARKET_NEWS" ->
+                        marketNewsCacheService
+                                .onTask_RetrievingMarketNews();
+                default ->
+                        log.warn("Unknown scheduled job. id={}, name={}",
+                                job.getId(),
+                                job.getJobName()
+                        );
             }
 
         } catch (Exception e) {

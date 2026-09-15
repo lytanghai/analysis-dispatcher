@@ -3,6 +3,7 @@ package com.finance.dispatch.worker.controller;
 import com.finance.dispatch.worker.records.TelegramMessage;
 import com.finance.dispatch.worker.records.TelegramUpdate;
 import com.finance.dispatch.worker.service.TelegramService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 @RequestMapping("/telegram")
 public class TelegramWebhookController {
 
@@ -20,8 +22,7 @@ public class TelegramWebhookController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<Void> consumeMessage(
-            @RequestBody TelegramUpdate update) {
+    public ResponseEntity<Void> consumeMessage(@RequestBody TelegramUpdate update) {
 
         if (update.message() == null) {
             return ResponseEntity.ok().build();
@@ -33,9 +34,9 @@ public class TelegramWebhookController {
         Long chatId = message.chat().id();
         String username = message.from().username();
 
-        System.out.println("Username: " + username);
-        System.out.println("Chat ID: " + chatId);
-        System.out.println("Message: " + text);
+        log.info("Username: {}",username);
+        log.info("Chat ID: {}", chatId);
+        log.info("Message: {}", text);
 
         // Your business logic
         handleMessage(chatId, text);

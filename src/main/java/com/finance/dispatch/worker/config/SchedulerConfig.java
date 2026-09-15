@@ -10,14 +10,10 @@ public class SchedulerConfig {
 
     @Bean
     public TaskScheduler taskScheduler() {
-
-        ThreadPoolTaskScheduler scheduler =
-                new ThreadPoolTaskScheduler();
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 
         scheduler.setPoolSize(5);
         scheduler.setThreadNamePrefix("dynamic-scheduler-");
-        scheduler.setWaitForTasksToCompleteOnShutdown(true);
-        scheduler.setAwaitTerminationSeconds(30);
         scheduler.initialize();
 
         return scheduler;

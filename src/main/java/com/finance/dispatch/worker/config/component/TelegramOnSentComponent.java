@@ -1,21 +1,19 @@
 package com.finance.dispatch.worker.config.component;
 
+import com.finance.dispatch.worker.service.TelegramService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Component
 public class TelegramOnSentComponent {
 
-    private final TelegramComponent telegramComponent;
+    private final TelegramService telegramService;
 
-    public TelegramOnSentComponent(TelegramComponent telegramComponent) {
-        this.telegramComponent = telegramComponent;
+    public TelegramOnSentComponent(TelegramService telegramService) {
+        this.telegramService = telegramService;
     }
 
     public void send(String chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
-        telegramComponent.sendMessage(message);
+        telegramService.sendMessage(Long.valueOf(chatId), text);
     }
 }

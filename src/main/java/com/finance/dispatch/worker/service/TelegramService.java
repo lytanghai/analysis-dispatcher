@@ -1,11 +1,14 @@
 package com.finance.dispatch.worker.service;
 
-
 import com.finance.dispatch.worker.config.component.TelegramOnSentComponent;
+import com.finance.dispatch.worker.config.properties.TelegramProperties;
+import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -13,15 +16,22 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class TelegramService {
 
     private final TelegramOnSentComponent telegramOnSentComponent;
+    private final TelegramProperties telegramProperties;
+    private final RestClientHttpUtils restClientHttpUtils;
 
+    public void sendMessage(Long chatId, String text) {
+        Map<String, Object> body = Map.of(
+                "chat_id", chatId,
+                "text", text
+        );
+
+        this.post("/sendMessage", body);
+    }
 
     public void handleUpdate(Update update) throws Exception {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
-            String reply = processCommand(
-                    chatId,
-                    update.getMessage().getText()
-            );
+            String reply = processCommand(chatId, update.getMessage().getText());
 
             telegramOnSentComponent.send(chatId, reply);
         }
@@ -74,11 +84,56 @@ public class TelegramService {
                     "⭐ /assettemplate \\-Get Asset Register Template\n" +
                     "💡 *Tip:* _Use the commands exactly as shown above._\n\n";
 
-
-
             default:
                 return "";
         }
+    }
+
+    public void deleteWebhook() {
+        this.get(
+            telegramProperties.getTelegramUrl() +
+            telegramProperties.getToken() +
+            telegramProperties.getDeleteWebhook()
+        );
+    }
+
+    public void updateWebhook() {
+        this.get(
+                telegramProperties.getTelegramUrl() +
+                telegramProperties.getToken() +
+                telegramProperties.getUpdateWebhook()
+        );
+    }
+
+    public void setWebhook() {
+        this.get(
+                telegramProperties.getTelegramUrl() +
+                telegramProperties.getToken() +
+                telegramProperties.getSetWebhook() +
+                telegramProperties.getAppWebhookUrl()
+        );
+    }
+
+    private void post(String endpoint, Object body) {
+        restClientHttpUtils.post(
+                "default-connector",
+                this.apiUrl(endpoint),
+                body,
+                Void.class
+        );
+    }
+
+    private void get(String endpoint) {
+
+        restClientHttpUtils.get(
+                "default-connector",
+                this.apiUrl(endpoint),
+                Void.class
+        );
+    }
+
+    private String apiUrl(String endpoint) {
+        return telegramProperties.getTelegramUrl().concat(telegramProperties.getToken()).concat(endpoint);
     }
 
 }

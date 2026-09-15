@@ -1,11 +1,9 @@
 package com.finance.dispatch.worker.controller;
 
-import com.finance.dispatch.worker.config.component.TelegramOnSentComponent;
 import com.sun.management.OperatingSystemMXBean;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,12 +68,4 @@ public class PublicController {
         return String.format("%.2f MB", bytes / (1024.0 * 1024.0));
     }
 
-
-    @Autowired
-    private TelegramOnSentComponent telegramOnSentComponent;
-
-    @GetMapping("/test-tg")
-    public void test() {
-        telegramOnSentComponent.send("678134373", "HELLO");
-    }
 }

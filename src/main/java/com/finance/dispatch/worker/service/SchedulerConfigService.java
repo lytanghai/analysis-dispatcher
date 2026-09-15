@@ -85,13 +85,10 @@ public class SchedulerConfigService {
                         String.valueOf(job.getId()),
                         job.getJobName(),
                         job.getCronExpression(),
-                        String.valueOf(job.getEnabled()),
-                        String.valueOf(job.getCreatedAt()),
-                        String.valueOf(job.getUpdatedAt())
+                        String.valueOf(job.getEnabled())
                 ))
                 .collect(Collectors.joining(";"));
 
         return DigestUtils.sha256Hex(content);
     }
-
 }
