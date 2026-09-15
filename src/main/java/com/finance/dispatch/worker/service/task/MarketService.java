@@ -41,6 +41,11 @@ public class MarketService {
         return response;
     }
 
+    public void onTest() {
+        GoldPriceResponse goldPriceResponse = retrieveGoldPrice();
+        var goldPrice = goldPriceResponse.getPrice();
+        log.info("GoldPrice:{}",goldPrice);
+    }
     public void onTask_TrackingGoldPrice(String type) {
         String date = DateTimeUtils.convertSimpleDate();
 
