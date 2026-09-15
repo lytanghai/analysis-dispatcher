@@ -24,7 +24,6 @@ import java.util.Objects;
 public class MarketService {
 
     private final PublicUrlProperties publicUrlProperties;
-    private final RestClientHttpUtils restClientHttpUtils;
     private final MarketHistoryRepository marketHistoryRepository;
 
     public GoldPriceResponse retrieveGoldPrice() {
