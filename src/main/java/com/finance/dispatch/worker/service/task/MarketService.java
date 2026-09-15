@@ -30,13 +30,17 @@ public class MarketService {
     public GoldPriceResponse retrieveGoldPrice() {
 
         RestTemplate restTemplate = new RestTemplate();
-        GoldPriceResponse response = restTemplate.getForObject(publicUrlProperties.getXauPrice(), GoldPriceResponse.class);
-
-        if(Objects.isNull(response)){
-            throw new ServerException("Failed to retrieveGoldPrice");
+        try {
+            GoldPriceResponse response = restTemplate.getForObject(publicUrlProperties.getXauPrice(), GoldPriceResponse.class);
+            if(Objects.isNull(response)){
+                throw new ServerException("Failed to retrieveGoldPrice");
+            }
+            return response;
+        }catch (Exception e){
+            log.error("Failed to retrieveGoldPrice {}",e.getMessage());
         }
-
-        return response;
+        log.error("Response Object Not Valid");
+        return null;
     }
 
     public void onTask_TrackingGoldPrice(String type) {
