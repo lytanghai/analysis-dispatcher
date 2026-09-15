@@ -1,12 +1,11 @@
 package com.finance.dispatch.worker.service;
 
 import com.finance.dispatch.worker.config.properties.TelegramProperties;
+import com.finance.dispatch.worker.dto.request.BotMessageRequest;
 import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,13 +15,9 @@ public class TelegramService {
     private final TelegramProperties telegramProperties;
     private final RestClientHttpUtils restClientHttpUtils;
 
-    public void sendMessage(Long chatId, String text) {
-        Map<String, Object> body = Map.of(
-                "chat_id", chatId,
-                "text", text
-        );
-
-        this.post("/sendMessage", body);
+    public void sendMessage(BotMessageRequest botMessageRequest) {
+        log.info("Request Received!");
+        this.post("/sendMessage", botMessageRequest);
     }
 
     private String processCommand(String chatId, String command) throws Exception {
@@ -102,7 +97,7 @@ public class TelegramService {
         );
     }
 
-    private void post(String endpoint, Object body) {
+    private void post(String endpoint, BotMessageRequest body) {
         restClientHttpUtils.post(
                 "default-connector",
                 endpoint,
