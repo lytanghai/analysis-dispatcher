@@ -23,6 +23,8 @@ public class TelegramProperties {
 
     private String updateWebhook;
 
+    private String sendMessage;
+
     private String setWebhook;
 
 }

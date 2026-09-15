@@ -17,7 +17,11 @@ public class TelegramService {
 
     public void sendMessage(BotMessageRequest botMessageRequest) {
         log.info("Request Received!");
-        this.post("/sendMessage", botMessageRequest);
+        botMessageRequest.setChatId(Long.valueOf(telegramProperties.getChatId()));
+        this.post(
+                telegramProperties.getTelegramUrl() + telegramProperties.getToken() + telegramProperties.getSendMessage(),
+                botMessageRequest
+        );
     }
 
     private String processCommand(String chatId, String command) throws Exception {

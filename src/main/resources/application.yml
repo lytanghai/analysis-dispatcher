@@ -49,6 +49,7 @@ telegram:
     telegram-url: https://api.telegram.org/bot
     delete-webhook: /deleteWebhook
     update-webhook: /getUpdates
+    send-message: /sendMessage
     set-webhook: /setWebhook?url=
 
 public-url:
