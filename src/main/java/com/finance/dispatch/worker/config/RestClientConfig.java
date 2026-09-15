@@ -38,6 +38,11 @@ import java.util.Map;
 public class RestClientConfig {
 
     @Bean
+    RestClient restClient() {
+        return RestClient.builder().build();
+    }
+
+    @Bean
     @ConditionalOnMissingBean
     public RestClientHttpUtils restClientUtils(RestClientProperties properties) {
         return new RestClientHttpUtils(restClients(properties), properties.defaultClientName());
