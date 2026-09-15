@@ -12,6 +12,7 @@ import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,13 +27,10 @@ public class MarketService {
     private final RestClientHttpUtils restClientHttpUtils;
     private final MarketHistoryRepository marketHistoryRepository;
 
-    private GoldPriceResponse retrieveGoldPrice() {
+    public GoldPriceResponse retrieveGoldPrice() {
 
-        GoldPriceResponse response = restClientHttpUtils.get(
-                "default-connector",
-                publicUrlProperties.getXauPrice(),
-                GoldPriceResponse.class
-        );
+        RestTemplate restTemplate = new RestTemplate();
+        GoldPriceResponse response = restTemplate.getForObject(publicUrlProperties.getXauPrice(), GoldPriceResponse.class);
 
         if(Objects.isNull(response)){
             throw new ServerException("Failed to retrieveGoldPrice");
@@ -41,11 +39,6 @@ public class MarketService {
         return response;
     }
 
-    public void onTest() {
-        GoldPriceResponse goldPriceResponse = retrieveGoldPrice();
-        var goldPrice = goldPriceResponse.getPrice();
-        log.info("GoldPrice:{}",goldPrice);
-    }
     public void onTask_TrackingGoldPrice(String type) {
         String date = DateTimeUtils.convertSimpleDate();
 

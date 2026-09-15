@@ -1,6 +1,5 @@
 package com.finance.dispatch.worker.config;
 
-
 import com.finance.dispatch.worker.config.properties.RestClientProperties;
 import com.finance.dispatch.worker.interceptor.LoggingInterceptor;
 import com.finance.dispatch.worker.util.RestClientHttpUtils;
@@ -36,11 +35,6 @@ import java.util.Map;
 @ConditionalOnClass(RestClient.class)
 @EnableConfigurationProperties(RestClientProperties.class)
 public class RestClientConfig {
-
-    @Bean
-    RestClient restClient() {
-        return RestClient.builder().build();
-    }
 
     @Bean
     @ConditionalOnMissingBean

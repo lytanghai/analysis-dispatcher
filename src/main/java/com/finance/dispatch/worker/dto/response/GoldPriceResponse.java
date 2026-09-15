@@ -14,10 +14,4 @@ public class GoldPriceResponse {
     @JsonProperty("symbol")
     private String symbol;
 
-    @JsonProperty("updated)at")
-    private String updatedAt;
-
-    @JsonProperty("currency_symbol")
-    private String currencySymbol;
-
 }

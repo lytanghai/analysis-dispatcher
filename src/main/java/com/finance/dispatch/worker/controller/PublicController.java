@@ -1,7 +1,6 @@
 package com.finance.dispatch.worker.controller;
 
-import com.finance.dispatch.worker.constant.TypeConstant;
-import com.finance.dispatch.worker.service.TestService;
+import com.finance.dispatch.worker.dto.response.GoldPriceResponse;
 import com.finance.dispatch.worker.service.task.MarketService;
 import com.sun.management.OperatingSystemMXBean;
 import lombok.Builder;
@@ -79,14 +78,9 @@ public class PublicController {
     @Autowired
     private MarketService marketService;;
 
-    private TestService testService;
-
     @GetMapping("/on-test")
-    public void testEndPoint() {
-        marketService.onTest();
-
-        System.out.println("TEST ON GOLD");
-        testService.testGold();
+    public GoldPriceResponse testEndPoint() {
+        return marketService.retrieveGoldPrice();
     }
 
 }
