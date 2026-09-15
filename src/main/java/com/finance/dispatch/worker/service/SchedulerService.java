@@ -10,9 +10,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,26 +98,34 @@ public class SchedulerService {
     }
 
     private void scheduleJob(ScheduledJob job) {
-
         cancelJob(job.getId());
 
         try {
+            ZoneId zoneId = ZoneId.of("Asia/Phnom_Penh");
 
-            CronTrigger trigger = new CronTrigger(job.getCronExpression(), TimeZone.getTimeZone(TIME_ZONE));
+            CronTrigger trigger = new CronTrigger(
+                    job.getCronExpression(),
+                    TimeZone.getTimeZone(zoneId)
+            );
 
-            ScheduledFuture<?> future = taskScheduler.schedule(() -> executeJob(job), trigger);
+            ScheduledFuture<?> future =
+                    taskScheduler.schedule(() -> executeJob(job), trigger);
 
             scheduledTasks.put(job.getId(), future);
 
-            log.info("Scheduled job. id={}, name={}, cron={}, timezone={}",
+            log.info(
+                    "Scheduled job. id={}, name={}, cron={}, timezone={}, serverNow={}, phnomPenhNow={}",
                     job.getId(),
                     job.getJobName(),
                     job.getCronExpression(),
-                    TIME_ZONE
+                    zoneId,
+                    LocalDateTime.now(),
+                    LocalDateTime.now(zoneId)
             );
 
         } catch (Exception e) {
-            log.error("Failed to schedule job. id={}, name={}, cron={}",
+            log.error(
+                    "Failed to schedule job. id={}, name={}, cron={}",
                     job.getId(),
                     job.getJobName(),
                     job.getCronExpression(),
