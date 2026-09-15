@@ -105,23 +105,18 @@ public class TelegramService {
     private void post(String endpoint, Object body) {
         restClientHttpUtils.post(
                 "default-connector",
-                this.apiUrl(endpoint),
+                endpoint,
                 body,
                 Void.class
         );
     }
 
     private void get(String endpoint) {
-
         restClientHttpUtils.get(
                 "default-connector",
-                this.apiUrl(endpoint),
+                endpoint,
                 Void.class
         );
-    }
-
-    private String apiUrl(String endpoint) {
-        return telegramProperties.getTelegramUrl().concat(telegramProperties.getToken()).concat(endpoint);
     }
 
 }

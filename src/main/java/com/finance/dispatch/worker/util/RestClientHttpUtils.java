@@ -167,43 +167,6 @@ public class RestClientHttpUtils {
         });
     }
 
-    public <T> T get(
-            String clientName,
-            String uri,
-            Consumer<UriBuilder> uriCustomizer,
-            HttpHeaders headers,
-            Class<T> responseType) {
-
-        return executeAndLog(clientName, "GET", uri, () -> {
-            var request = getClient(clientName).get();
-
-            request.headers(h -> h.addAll(buildHeader(headers)));
-            return request.uri(uriBuilder -> {
-                        UriBuilder builder = uriBuilder.path(uri);
-
-                        if (uriCustomizer != null) {
-                            uriCustomizer.accept(builder);
-                        }
-
-                        return builder.build();
-                    })
-                    .retrieve()
-                    .toEntity(responseType);
-        });
-    }
-
-    public <T> T get(String clientName, String uri, HttpHeaders headers, Class<T> responseType) {
-        return executeAndLog(clientName, GET, uri, () -> {
-            var request = getClient(clientName).get().uri(uri);
-
-            HttpHeaders finalHeaders = buildHeader(headers);
-
-            request.headers(h -> h.addAll(finalHeaders));
-
-            return request.retrieve().toEntity(responseType);
-        });
-    }
-
     private HttpHeaders buildHeader(HttpHeaders requestHeaders) {
         HttpHeaders headers = requestHeaders == null ? new HttpHeaders() : requestHeaders;
         if (requestHeaders == null) {
