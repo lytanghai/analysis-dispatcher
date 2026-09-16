@@ -11,7 +11,6 @@ import com.finance.dispatch.worker.exception.DatabaseException;
 import com.finance.dispatch.worker.mapper.JobMapper;
 import com.finance.dispatch.worker.repository.ScheduledJobRepository;
 import com.finance.dispatch.worker.repository.specification.ScheduledJobSpecification;
-import com.finance.dispatch.worker.util.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -135,7 +134,18 @@ public class JobService {
                         ScheduledJobSpecification.filter(filter),
                         pageable
                 )
-                .map(jobMapper::toResponse);
+                .map(f -> {
+                    JobResponse response = new JobResponse();
+
+                    response.setId(f.getId());
+                    response.setCreatedAt(f.getCreatedAt());
+                    response.setJobName(f.getJobName());
+                    response.setCronExpression(f.getCronExpression());
+                    response.setEnabled(f.getEnabled());
+                    response.setUpdatedAt(f.getUpdatedAt());
+
+                    return response;
+                });
 
         return PageResponse.<JobResponse>builder()
                 .content(result.getContent())

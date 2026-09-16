@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "spring")
 public interface JobMapper {
 
-    JobResponse toResponse(ScheduledJob scheduledJob);
+    JobResponse toResponse(ScheduledJob job);
 }

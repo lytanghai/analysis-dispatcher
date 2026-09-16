@@ -1,5 +1,6 @@
 package com.finance.dispatch.worker.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.finance.dispatch.worker.dto.request.DynamicRequest;
 import com.finance.dispatch.worker.dto.response.DynamicResponse;
 import com.finance.dispatch.worker.dto.response.GoldPriceResponse;
@@ -105,7 +106,8 @@ public class PublicController {
 //    }
 
     @PostMapping("/request")
-    public ResponseEntity<DynamicResponse> request(@Valid @RequestBody DynamicRequest request) {
+    public ResponseEntity<DynamicResponse> request(
+            @Valid @RequestBody DynamicRequest request) {
         return ResponseEntity.ok(
                 dynamicApiService.execute(request)
         );
