@@ -2,8 +2,10 @@ package com.finance.dispatch.worker.service.task;
 
 import com.finance.dispatch.worker.config.properties.PublicUrlProperties;
 import com.finance.dispatch.worker.constant.CacheConstant;
+import com.finance.dispatch.worker.dto.request.BotMessageRequest;
 import com.finance.dispatch.worker.dto.response.MarketNews;
 import com.finance.dispatch.worker.exception.ServerException;
+import com.finance.dispatch.worker.service.TelegramService;
 import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,31 +14,75 @@ import org.springframework.cache.CacheManager;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class MarketNewsCacheService {
+public class MarketNewsService {
 
     private final CacheManager cacheManager;
+    private final TelegramService telegramService;
     private final PublicUrlProperties publicUrlProperties;
     private final RestClientHttpUtils restClientHttpUtils;
 
     public List<MarketNews> onTask_RetrievingMarketNews() {
         log.info("[cache] onTask_RetrievingMarketNews");
+
+        return this.fetch()
+                .stream()
+                .filter(news -> "USD".equalsIgnoreCase(news.getCountry()))
+                .toList();
+    }
+
+    public void onTask_RetrievingDailyMarketEvent() {
+        List<MarketNews> marketNews = this.fetch();
+
+        LocalDate today = LocalDate.now();
+
+        List<MarketNews> todayUsdNews = marketNews.stream()
+                .filter(news -> "USD".equalsIgnoreCase(news.getCountry()))
+                .filter(news -> news.getDate() != null)
+                .filter(news -> news.getDate().toLocalDate().equals(today))
+                .toList();
+
+        BotMessageRequest botMessageRequest = new BotMessageRequest();
+
+        var tgMessage = todayUsdNews.isEmpty()
+                ? "📰 <b>USD Market News</b>\n\nNo USD news today."
+                : todayUsdNews.stream()
+                .map(news -> """
+                        <b>USD</b>
+
+                        📰 <b>%s</b>
+                        🕐 %s
+                        ⚡ <b>Impact:</b> %s
+                        """.formatted(
+                        news.getTitle(),
+                        news.getDate().format(DateTimeFormatter.ofPattern("hh:mm a")),
+                        news.getImpact()
+                ))
+                .collect(Collectors.joining("\n──────────────\n"));
+
+        botMessageRequest.setText(tgMessage);
+        botMessageRequest.setParseMode("HTML");
+
+        telegramService.sendMessage(botMessageRequest);
+        log.info("message sent!");
+    }
+
+    public List<MarketNews> fetch() {
         List<MarketNews> marketNews = this.marketNewsCache().get(CacheConstant.CACHE_KEY, List.class);
 
         if(Objects.isNull(marketNews)){
             log.info("MarketNews is null");
             return List.of();
         }
-
-        return marketNews
-                .stream()
-                .filter(news -> "USD".equalsIgnoreCase(news.getCountry()))
-                .toList();
+        return marketNews;
     }
 
     public List<MarketNews> retrieveForexFactory() {

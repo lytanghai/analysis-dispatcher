@@ -1,10 +1,9 @@
 package com.finance.dispatch.worker.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.finance.dispatch.worker.dto.request.DynamicRequest;
 import com.finance.dispatch.worker.dto.response.DynamicResponse;
-import com.finance.dispatch.worker.dto.response.GoldPriceResponse;
 import com.finance.dispatch.worker.service.DynamicApiService;
+import com.finance.dispatch.worker.service.task.MarketNewsService;
 import com.finance.dispatch.worker.service.task.MarketService;
 import com.sun.management.OperatingSystemMXBean;
 import jakarta.validation.Valid;
@@ -21,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -91,6 +88,9 @@ public class PublicController {
     @Autowired
     private DynamicApiService dynamicApiService;
 
+    @Autowired
+    private MarketNewsService marketNewsService;
+
 
 //    {
 //        "url": "https://api.example.com/v1/test",
@@ -111,6 +111,11 @@ public class PublicController {
         return ResponseEntity.ok(
                 dynamicApiService.execute(request)
         );
+    }
+
+    @GetMapping("/test-only")
+    public void test() {
+        marketNewsService.onTask_RetrievingDailyMarketEvent();
     }
 
 }

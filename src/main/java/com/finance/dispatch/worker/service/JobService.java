@@ -97,6 +97,7 @@ public class JobService {
         var jobId = jobOperationRequest.getId();
         var jobName = jobOperationRequest.getJobName();
         var enabled = jobOperationRequest.isEnabled();
+        var expression = jobOperationRequest.getCronExpression();
 
         ScheduledJob scheduledJob = scheduledJobRepository.findById(jobId).orElse(null);
 
@@ -105,6 +106,10 @@ public class JobService {
                     ResponseCode.JOB_NOT_FOUND,
                     "Job not found: " + jobId
             );
+        }
+
+        if(Objects.nonNull(expression)){
+            scheduledJob.setCronExpression(expression);
         }
 
         if(!scheduledJob.getEnabled().equals(enabled)){

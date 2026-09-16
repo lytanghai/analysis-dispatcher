@@ -2,7 +2,7 @@ package com.finance.dispatch.worker.service;
 
 import com.finance.dispatch.worker.entity.ScheduledJob;
 import com.finance.dispatch.worker.records.SchedulerConfigSnapshot;
-import com.finance.dispatch.worker.service.task.MarketNewsCacheService;
+import com.finance.dispatch.worker.service.task.MarketNewsService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +32,8 @@ public class SchedulerService {
     private static final String TIME_ZONE = "Asia/Phnom_Penh";
 
     private final TaskScheduler taskScheduler;
+    private final MarketNewsService marketNewsService;
     private final SchedulerConfigService schedulerConfigService;
-    private final MarketNewsCacheService marketNewsCacheService;
 
     private final Map<Long, ScheduledFuture<?>> scheduledTasks =
             new ConcurrentHashMap<>();
@@ -143,17 +143,13 @@ public class SchedulerService {
         log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
         try {
             switch (job.getJobName()) {
-//                case "XAU_OPEN_MARKET" ->
-//                        marketService.onTask_TrackingGoldPrice(
-//                                TypeConstant.OPENED
-//                        );
-//                case "XAU_CLOSE_MARKET" ->
-//                        marketService.onTask_TrackingGoldPrice(
-//                                TypeConstant.CLOSED
-//                        );
                 case "MARKET_NEWS" ->
-                        marketNewsCacheService
+                        marketNewsService
                                 .onTask_RetrievingMarketNews();
+
+                case "DAILY_MARKET_EVENT" ->
+                    marketNewsService.onTask_RetrievingDailyMarketEvent();
+
                 default ->
                         log.warn("Unknown scheduled job. id={}, name={}",
                                 job.getId(),

@@ -1,7 +1,7 @@
 package com.finance.dispatch.worker.controller;
 
 import com.finance.dispatch.worker.dto.response.MarketNews;
-import com.finance.dispatch.worker.service.task.MarketNewsCacheService;
+import com.finance.dispatch.worker.service.task.MarketNewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,21 +14,21 @@ import java.util.List;
 @RequestMapping("/cache")
 public class CacheController {
 
-    private final MarketNewsCacheService marketNewsCacheService;
+    private final MarketNewsService marketNewsService;
 
     @GetMapping("/fetch-market-event")
     public List<MarketNews> onCache_RetrievingMarketNews() {
-        return marketNewsCacheService.onTask_RetrievingMarketNews();
+        return marketNewsService.onTask_RetrievingMarketNews();
     }
 
     @GetMapping("/reload-market-event")
     public void reload_MarketNews() {
-        marketNewsCacheService.refresh();
+        marketNewsService.refresh();
     }
 
     @GetMapping("/clear-market-event")
     public void clear_MarketNews() {
-        marketNewsCacheService.clear();
+        marketNewsService.clear();
     }
 
 }
