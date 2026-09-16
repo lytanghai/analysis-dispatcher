@@ -44,7 +44,8 @@ public class MarketNewsCacheService {
         List<MarketNews> marketNews = restClientHttpUtils.get(
                 "default-connector",
                 publicUrlProperties.getForexFactory(),
-                new ParameterizedTypeReference<List<MarketNews>>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         if (marketNews == null) {

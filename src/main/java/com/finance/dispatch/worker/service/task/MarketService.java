@@ -1,18 +1,14 @@
 package com.finance.dispatch.worker.service.task;
 
-import com.finance.dispatch.worker.config.properties.PublicUrlProperties;
 import com.finance.dispatch.worker.constant.TypeConstant;
-import com.finance.dispatch.worker.dto.response.GoldPriceResponse;
+import com.finance.dispatch.worker.dto.request.GoldPriceRequest;
 import com.finance.dispatch.worker.entity.MarketHistory;
 import com.finance.dispatch.worker.exception.LogicException;
-import com.finance.dispatch.worker.exception.ServerException;
 import com.finance.dispatch.worker.repository.MarketHistoryRepository;
 import com.finance.dispatch.worker.util.DateTimeUtils;
-import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,31 +19,16 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MarketService {
 
-    private final PublicUrlProperties publicUrlProperties;
     private final MarketHistoryRepository marketHistoryRepository;
 
-    public GoldPriceResponse retrieveGoldPrice() {
+    public void onTask_TrackingGoldPrice(GoldPriceRequest request) {
 
-        RestTemplate restTemplate = new RestTemplate();
-        try {
-            GoldPriceResponse response = restTemplate.getForObject(publicUrlProperties.getXauPrice(), GoldPriceResponse.class);
-            if(Objects.isNull(response)){
-                throw new ServerException("Failed to retrieveGoldPrice");
-            }
-            return response;
-        }catch (Exception e){
-            log.error("Failed to retrieveGoldPrice {}",e.getMessage());
-        }
-        log.error("Response Object Not Valid");
-        return null;
-    }
-
-    public void onTask_TrackingGoldPrice(String type) {
-        String date = DateTimeUtils.convertSimpleDate();
+        var date = DateTimeUtils.convertSimpleDate();
+        var type = request.getStatus();
+        var goldPrice = request.getPrice();
+        var symbol = request.getSymbol();
 
         log.info("[cron] onTask_TrackingGoldPrice {} executed for {}", type, date);
-        GoldPriceResponse goldPriceResponse = retrieveGoldPrice();
-        var goldPrice = goldPriceResponse.getPrice();
 
         if(TypeConstant.OPENED.equals(type)){
             MarketHistory marketHistory = MarketHistory.builder()
@@ -56,7 +37,7 @@ public class MarketService {
                     .closed(BigDecimal.ZERO)
                     .priceChange(BigDecimal.ZERO)
                     .createdAt(LocalDateTime.now())
-                    .symbol(goldPriceResponse.getSymbol())
+                    .symbol(symbol)
                     .build();
 
             try {

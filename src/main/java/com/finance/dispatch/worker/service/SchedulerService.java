@@ -148,14 +148,14 @@ public class SchedulerService {
         log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
         try {
             switch (job.getJobName()) {
-                case "XAU_OPEN_MARKET" ->
-                        marketService.onTask_TrackingGoldPrice(
-                                TypeConstant.OPENED
-                        );
-                case "XAU_CLOSE_MARKET" ->
-                        marketService.onTask_TrackingGoldPrice(
-                                TypeConstant.CLOSED
-                        );
+//                case "XAU_OPEN_MARKET" ->
+//                        marketService.onTask_TrackingGoldPrice(
+//                                TypeConstant.OPENED
+//                        );
+//                case "XAU_CLOSE_MARKET" ->
+//                        marketService.onTask_TrackingGoldPrice(
+//                                TypeConstant.CLOSED
+//                        );
                 case "MARKET_NEWS" ->
                         marketNewsCacheService
                                 .onTask_RetrievingMarketNews();

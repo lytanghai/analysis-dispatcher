@@ -2,14 +2,42 @@ name: Update Gold Price
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    # 04:00 Cambodia (UTC+7) -> CLOSED
+    - cron: "0 21 * * *"
+
+    # 05:00 Cambodia (UTC+7) -> OPENED
+    - cron: "0 22 * * *"
+
   workflow_dispatch:
+    inputs:
+      status:
+        description: "OPENED or CLOSED"
+        required: true
+        default: "OPENED"
+        type: choice
+        options:
+          - OPENED
+          - CLOSED
 
 jobs:
   update-gold-price:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Determine status
+        id: status
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            STATUS="${{ inputs.status }}"
+          elif [ "${{ github.event.schedule }}" = "0 21 * * *" ]; then
+            STATUS="CLOSED"
+          elif [ "${{ github.event.schedule }}" = "0 22 * * *" ]; then
+            STATUS="OPENED"
+          fi
+
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "Market status: $STATUS"
+
       - name: Fetch gold price
         id: gold
         run: |
@@ -26,4 +54,7 @@ jobs:
         run: |
           curl -fsS -X POST "${{ secrets.GOLD_CALLBACK_URL }}" \
             -H "Content-Type: application/json" \
-            -d '${{ steps.gold.outputs.response }}'
+            -d '{
+              "status": "${{ steps.status.outputs.status }}",
+              "gold": ${{ steps.gold.outputs.response }}
+            }'

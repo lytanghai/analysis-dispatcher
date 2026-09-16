@@ -8,6 +8,10 @@ import java.math.BigDecimal;
 @Data
 public class GoldPriceRequest {
 
+    //OPEN || CLOSE
+    @JsonProperty("status")
+    private String status;
+
     @JsonProperty("price")
     private BigDecimal price;
 
