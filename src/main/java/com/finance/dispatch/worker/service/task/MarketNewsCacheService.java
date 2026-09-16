@@ -25,6 +25,7 @@ public class MarketNewsCacheService {
     private final RestClientHttpUtils restClientHttpUtils;
 
     public List<MarketNews> onTask_RetrievingMarketNews() {
+        log.info("[cache] onTask_RetrievingMarketNews");
         List<MarketNews> marketNews = this.marketNewsCache().get(CacheConstant.CACHE_KEY, List.class);
 
         if(Objects.isNull(marketNews)){

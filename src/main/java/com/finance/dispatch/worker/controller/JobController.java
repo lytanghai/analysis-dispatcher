@@ -8,9 +8,7 @@ import com.finance.dispatch.worker.dto.response.PageResponse;
 import com.finance.dispatch.worker.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +40,7 @@ public class JobController {
     }
 
     //list
-    @GetMapping("/list")
+    @PostMapping("/list")
     public ResponseEntity<PageResponse<JobResponse>> getJobs(
             @RequestBody JobFilterRequest jobFilterRequest,
             @RequestParam(defaultValue = "0") int page,

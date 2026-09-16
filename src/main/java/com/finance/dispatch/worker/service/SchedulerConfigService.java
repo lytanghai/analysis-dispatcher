@@ -28,7 +28,7 @@ public class SchedulerConfigService {
 
     private volatile Instant cacheExpiresAt = Instant.MIN;
 
-    private static final Duration CACHE_TTL = Duration.ofMinutes(30);
+    private static final Duration CACHE_TTL = Duration.ofMinutes(60);
 
     public SchedulerConfigSnapshot getConfig() {
 

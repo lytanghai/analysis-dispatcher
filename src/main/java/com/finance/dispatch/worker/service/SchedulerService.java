@@ -1,22 +1,18 @@
 package com.finance.dispatch.worker.service;
 
-import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.entity.ScheduledJob;
 import com.finance.dispatch.worker.records.SchedulerConfigSnapshot;
 import com.finance.dispatch.worker.service.task.MarketNewsCacheService;
-import com.finance.dispatch.worker.service.task.MarketService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +32,6 @@ public class SchedulerService {
     private static final String TIME_ZONE = "Asia/Phnom_Penh";
 
     private final TaskScheduler taskScheduler;
-    private final MarketService marketService;
     private final SchedulerConfigService schedulerConfigService;
     private final MarketNewsCacheService marketNewsCacheService;
 
@@ -51,7 +46,7 @@ public class SchedulerService {
         refreshSchedules();
     }
 
-    @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedDelay = 60, timeUnit = TimeUnit.MINUTES)
     public void checkForConfigurationChanges() {
         log.info("Checking for scheduler configuration changes");
         refreshSchedules();
@@ -114,7 +109,7 @@ public class SchedulerService {
             scheduledTasks.put(job.getId(), future);
 
             log.info(
-                    "Scheduled job. id={}, name={}, cron={}, timezone={}, serverNow={}, phnomPenhNow={}",
+                    "Scheduled job. id={}, name={}, cron={}, timezone={}, serverNow={}, zoneIdNow={}",
                     job.getId(),
                     job.getJobName(),
                     job.getCronExpression(),

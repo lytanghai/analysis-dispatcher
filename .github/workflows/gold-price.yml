@@ -1,4 +1,4 @@
-name: Update Gold Price
+name: onTask_QueryPrice
 
 on:
   schedule:

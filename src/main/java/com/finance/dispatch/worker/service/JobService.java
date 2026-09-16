@@ -52,10 +52,10 @@ public class JobService {
 
         try {
             newScheduledJob = scheduledJobRepository.save(newScheduledJob);
+            log.info("new job created: {}", newScheduledJob.getJobName());
         }catch (Exception e){
             throw new DatabaseException(ResponseCode.FAILED_TO_CREATE, e.getMessage());
         }
-
 
         JobResponse jobResponse = new JobResponse();
         jobResponse.setId(newScheduledJob.getId());
