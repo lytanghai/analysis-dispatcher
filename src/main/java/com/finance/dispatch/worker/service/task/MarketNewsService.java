@@ -53,30 +53,40 @@ public class MarketNewsService {
         BotMessageRequest botMessageRequest = new BotMessageRequest();
 
         var tgMessage = todayUsdNews.isEmpty()
-                ? "📰 <b>USD Market News</b>\n\nNo USD news today."
-                : todayUsdNews.stream()
-                .map(news -> """
-                        <b>USD</b>
+                ? "💵 <b>Today event</b>\n\nNo event today."
+                : """
+          💵 <b>Today event: %s</b>
 
-                        📰 <b>%s</b>
-                        🕐 %s
-                        ⚡ <b>Impact:</b> %s
-                        """.formatted(
-                        news.getTitle(),
-                        news.getDate().format(DateTimeFormatter.ofPattern("hh:mm a")),
-                        news.getImpact()
-                ))
-                .collect(Collectors.joining("\n──────────────\n"));
-
-        botMessageRequest.setText(tgMessage);
-        botMessageRequest.setParseMode("HTML");
-
-        telegramService.sendMessage(botMessageRequest);
+          %s
+          """.formatted(
+                todayUsdNews.getFirst().getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                todayUsdNews.stream()
+                        .map(news -> """
+                                🕐 %s — %s | %s %s
+                                """
+                                .formatted(
+                                news.getDate().format(DateTimeFormatter.ofPattern("hh:mm a")),
+                                news.getTitle(),
+                                getImpactEmoji(news.getImpact()),
+                                news.getImpact()
+                        ))
+                        .collect(Collectors.joining("\n"))
+        );
+        telegramService.sendMessage(tgMessage);
         log.info("message sent!");
     }
 
+    public String getImpactEmoji(String impact) {
+        return switch (impact.toUpperCase()) {
+            case "HIGH" -> "🔴";
+            case "MEDIUM" -> "🟡";
+            case "LOW" -> "🟢";
+            default -> "⚪";
+        };
+    }
+
     public List<MarketNews> fetch() {
-        List<MarketNews> marketNews = this.marketNewsCache().get(CacheConstant.CACHE_KEY, List.class);
+        List<MarketNews> marketNews = this.marketNewsCache().get(CacheConstant.THIS_WEEK, List.class);
 
         if(Objects.isNull(marketNews)){
             log.info("MarketNews is null");
@@ -105,7 +115,7 @@ public class MarketNewsService {
     }
 
     public void clear() {
-        this.marketNewsCache().evict(CacheConstant.CACHE_KEY);
+        this.marketNewsCache().evict(CacheConstant.THIS_WEEK);
     }
 
     public void refresh() {
@@ -113,10 +123,10 @@ public class MarketNewsService {
     }
 
     private void put(List<MarketNews> marketNews) {
-        this.marketNewsCache().put(CacheConstant.CACHE_KEY, marketNews);
+        this.marketNewsCache().put(CacheConstant.THIS_WEEK, marketNews);
     }
 
     private Cache marketNewsCache() {
-        return cacheManager.getCache(CacheConstant.CACHE_NAME);
+        return cacheManager.getCache(CacheConstant.MARKET_NEWS);
     }
 }

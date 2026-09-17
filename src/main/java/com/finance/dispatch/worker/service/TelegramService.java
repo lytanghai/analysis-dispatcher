@@ -15,8 +15,10 @@ public class TelegramService {
     private final TelegramProperties telegramProperties;
     private final RestClientHttpUtils restClientHttpUtils;
 
-    public void sendMessage(BotMessageRequest botMessageRequest) {
+    public void sendMessage(String text) {
         log.info("Request Received!");
+        BotMessageRequest botMessageRequest = new BotMessageRequest();
+        botMessageRequest.setText(text);
         botMessageRequest.setChatId(Long.valueOf(telegramProperties.getChatId()));
         this.post(
                 telegramProperties.getTelegramUrl() + telegramProperties.getToken() + telegramProperties.getSendMessage(),

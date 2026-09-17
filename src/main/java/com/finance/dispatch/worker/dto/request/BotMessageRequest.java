@@ -13,5 +13,5 @@ public class BotMessageRequest {
     private String text;
 
     @JsonProperty("parse_mode")
-    private String parseMode;
+    private String parseMode="HTML";
 }

@@ -4,7 +4,6 @@ import com.finance.dispatch.worker.dto.request.DynamicRequest;
 import com.finance.dispatch.worker.dto.response.DynamicResponse;
 import com.finance.dispatch.worker.service.DynamicApiService;
 import com.finance.dispatch.worker.service.task.MarketNewsService;
-import com.finance.dispatch.worker.service.task.MarketService;
 import com.sun.management.OperatingSystemMXBean;
 import jakarta.validation.Valid;
 import lombok.Builder;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.management.ManagementFactory;
-import java.time.LocalDateTime;
 
 @RestController
 @Slf4j
@@ -43,8 +41,7 @@ public class PublicController {
         return "SUCCESS";
     }
 
-    public SystemHealth checkSystemHealth() {
-        log.info("Current Date: {}", LocalDateTime.now());
+    public void checkSystemHealth() {
         Runtime runtime = Runtime.getRuntime();
 
         // Force garbage collection for more accurate memory readings
@@ -73,17 +70,11 @@ public class PublicController {
                 String.format("%.2f%%", cpuUsage),
                 formatMemory(usedMemory),
                 formatMemory(totalMemory));
-
-        return systemHealth;
     }
 
     private String formatMemory(long bytes) {
         return String.format("%.2f MB", bytes / (1024.0 * 1024.0));
     }
-
-
-    @Autowired
-    private MarketService marketService;;
 
     @Autowired
     private DynamicApiService dynamicApiService;

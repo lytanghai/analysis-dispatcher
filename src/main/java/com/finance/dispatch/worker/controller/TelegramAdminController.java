@@ -20,7 +20,7 @@ public class TelegramAdminController {
 
     @PostMapping("/send")
     public void sendMessage(@RequestBody BotMessageRequest botMessageRequest){
-        telegramService.sendMessage(botMessageRequest);
+        telegramService.sendMessage(botMessageRequest.getText());
     }
 
     @GetMapping("/delete")

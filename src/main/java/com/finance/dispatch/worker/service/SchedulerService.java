@@ -52,6 +52,33 @@ public class SchedulerService {
         refreshSchedules();
     }
 
+    private void executeJob(ScheduledJob job) {
+        log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
+        try {
+            switch (job.getJobName()) {
+                case "MARKET_NEWS" ->
+                        marketNewsService
+                                .onTask_RetrievingMarketNews();
+
+                case "DAILY_MARKET_EVENT" ->
+                        marketNewsService.onTask_RetrievingDailyMarketEvent();
+
+                default ->
+                        log.warn("Unknown scheduled job. id={}, name={}",
+                                job.getId(),
+                                job.getJobName()
+                        );
+            }
+
+        } catch (Exception e) {
+            log.error("Scheduled job failed. id={}, name={}",
+                    job.getId(),
+                    job.getJobName(),
+                    e
+            );
+        }
+    }
+
     private void refreshSchedules() {
 
         SchedulerConfigSnapshot snapshot = schedulerConfigService.getConfig();
@@ -136,33 +163,6 @@ public class SchedulerService {
         if (future != null) {
             future.cancel(false);
             log.info("Cancelled scheduled job. id={}", jobId);
-        }
-    }
-
-    private void executeJob(ScheduledJob job) {
-        log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
-        try {
-            switch (job.getJobName()) {
-                case "MARKET_NEWS" ->
-                        marketNewsService
-                                .onTask_RetrievingMarketNews();
-
-                case "DAILY_MARKET_EVENT" ->
-                    marketNewsService.onTask_RetrievingDailyMarketEvent();
-
-                default ->
-                        log.warn("Unknown scheduled job. id={}, name={}",
-                                job.getId(),
-                                job.getJobName()
-                        );
-            }
-
-        } catch (Exception e) {
-            log.error("Scheduled job failed. id={}, name={}",
-                    job.getId(),
-                    job.getJobName(),
-                    e
-            );
         }
     }
 }
