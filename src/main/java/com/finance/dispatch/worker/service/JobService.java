@@ -11,6 +11,7 @@ import com.finance.dispatch.worker.exception.DatabaseException;
 import com.finance.dispatch.worker.mapper.JobMapper;
 import com.finance.dispatch.worker.repository.ScheduledJobRepository;
 import com.finance.dispatch.worker.repository.specification.ScheduledJobSpecification;
+import com.finance.dispatch.worker.util.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,8 @@ public class JobService {
     private final ScheduledJobRepository scheduledJobRepository;
 
     public JobResponse createJob(JobRequest jobRequest) {
+
+        Validator.validateCronExpress(jobRequest.getCronExpression());
 
         var jobName = jobRequest.getJobName();
 
@@ -98,6 +101,8 @@ public class JobService {
         var jobName = jobOperationRequest.getJobName();
         var enabled = jobOperationRequest.isEnabled();
         var expression = jobOperationRequest.getCronExpression();
+
+        Validator.validateCronExpress(expression);
 
         ScheduledJob scheduledJob = scheduledJobRepository.findById(jobId).orElse(null);
 
