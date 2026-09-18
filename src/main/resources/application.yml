@@ -53,5 +53,5 @@ telegram:
     set-webhook: /setWebhook?url=
 
 public-url:
-  xau-price: https://api.gold-api.com/price/XAU
+  xau-price: https://xaus.com/api/v1/spot
   forex-factory: https://nfs.faireconomy.media/ff_calendar_thisweek.json

@@ -19,7 +19,7 @@ public class CallbackController {
 
     @PostMapping("/receive_price")
     public void onCallback_ReceivePrice(@RequestBody GoldPriceRequest request) {
-      marketService.onTask_TrackingGoldPrice(request);
+      marketService.onTask_TrackingGoldPriceCallBack(request);
     }
 
 }

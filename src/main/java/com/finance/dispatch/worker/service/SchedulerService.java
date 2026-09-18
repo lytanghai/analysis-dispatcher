@@ -1,8 +1,10 @@
 package com.finance.dispatch.worker.service;
 
+import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.entity.ScheduledJob;
 import com.finance.dispatch.worker.records.SchedulerConfigSnapshot;
 import com.finance.dispatch.worker.service.task.MarketNewsService;
+import com.finance.dispatch.worker.service.task.MarketService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +26,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class SchedulerService {
 
     private static final String TIME_ZONE = "Asia/Phnom_Penh";
 
     private final TaskScheduler taskScheduler;
+    private final MarketService marketService;
     private final MarketNewsService marketNewsService;
     private final SchedulerConfigService schedulerConfigService;
 
@@ -56,12 +59,22 @@ public class SchedulerService {
         log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
         try {
             switch (job.getJobName()) {
+
+                case "OPENED_PRICE" ->
+                    marketService.onTask_TrackingGoldPriceApi(TypeConstant.OPENED);
+
+                case "CLOSED_PRICE" ->
+                        marketService.onTask_TrackingGoldPriceApi(TypeConstant.CLOSED);
+
                 case "MARKET_NEWS" ->
-                        marketNewsService
-                                .onTask_RetrievingMarketNews();
+                        marketNewsService.onTask_RetrievingMarketNews();
 
                 case "DAILY_MARKET_EVENT" ->
                         marketNewsService.onTask_RetrievingDailyMarketEvent();
+
+                case "XAU_SPOT_PRICE_UPDATE" ->
+                    marketService.onTask_RetrievingPriceUpdate();
+
 
                 default ->
                         log.warn("Unknown scheduled job. id={}, name={}",

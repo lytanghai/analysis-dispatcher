@@ -1,6 +1,7 @@
 package com.finance.dispatch.worker.service;
 
 import com.finance.dispatch.worker.config.properties.TelegramProperties;
+import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.dto.request.BotMessageRequest;
 import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class TelegramService {
 
     private void post(String endpoint, BotMessageRequest body) {
         restClientHttpUtils.post(
-                "default-connector",
+                TypeConstant.DEFAULT_REQUESTER,
                 endpoint,
                 body,
                 Void.class
@@ -62,7 +63,7 @@ public class TelegramService {
 
     private void get(String endpoint) {
         restClientHttpUtils.get(
-                "default-connector",
+                TypeConstant.DEFAULT_REQUESTER,
                 endpoint,
                 Void.class
         );

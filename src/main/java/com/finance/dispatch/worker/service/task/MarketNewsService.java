@@ -2,6 +2,7 @@ package com.finance.dispatch.worker.service.task;
 
 import com.finance.dispatch.worker.config.properties.PublicUrlProperties;
 import com.finance.dispatch.worker.constant.CacheConstant;
+import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.dto.request.BotMessageRequest;
 import com.finance.dispatch.worker.dto.response.MarketNews;
 import com.finance.dispatch.worker.exception.ServerException;
@@ -99,7 +100,7 @@ public class MarketNewsService {
         log.info("Requesting to Forex Factory API...");
 
         List<MarketNews> marketNews = restClientHttpUtils.get(
-                "default-connector",
+                TypeConstant.DEFAULT_REQUESTER,
                 publicUrlProperties.getForexFactory(),
                 new ParameterizedTypeReference<>() {
                 }

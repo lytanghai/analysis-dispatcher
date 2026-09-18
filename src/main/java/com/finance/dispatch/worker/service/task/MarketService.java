@@ -1,11 +1,15 @@
 package com.finance.dispatch.worker.service.task;
 
+import com.finance.dispatch.worker.config.properties.PublicUrlProperties;
 import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.dto.request.GoldPriceRequest;
+import com.finance.dispatch.worker.dto.response.ApiGoldPriceResponse;
 import com.finance.dispatch.worker.entity.MarketHistory;
 import com.finance.dispatch.worker.exception.LogicException;
 import com.finance.dispatch.worker.repository.MarketHistoryRepository;
+import com.finance.dispatch.worker.service.TelegramService;
 import com.finance.dispatch.worker.util.DateTimeUtils;
+import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,17 +23,98 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MarketService {
 
+    private final TelegramService telegramService;
+    private final RestClientHttpUtils restClientHttpUtils;
+    private final PublicUrlProperties publicUrlProperties;
     private final MarketHistoryRepository marketHistoryRepository;
 
-    public void onTask_TrackingGoldPrice(GoldPriceRequest request) {
+    private BigDecimal PREVIOUS_PRICE = BigDecimal.ZERO;
+
+    private BigDecimal onApi_RetrievePrice() {
+        ApiGoldPriceResponse response = restClientHttpUtils.get(
+                TypeConstant.DEFAULT_REQUESTER,
+                publicUrlProperties.getXauPrice(),
+                ApiGoldPriceResponse.class
+        );
+
+        if(Objects.isNull(response)) {
+            log.error("[onApi_RetrievePrice] Failed to retrieve price");
+            return BigDecimal.ZERO;
+        }
+
+        if(response.getStatus() != 200) {
+            log.error("[onApi_RetrievePrice] Failed to retrieve price due to status != 200");
+            return BigDecimal.ZERO;
+        }
+
+        return response.getBody().getXau().getPrice();
+    }
+
+    public void onTask_RetrievingPriceUpdate(){
+        BigDecimal currentPrice = this.onApi_RetrievePrice();
+
+        if(currentPrice.equals(BigDecimal.ZERO)) {
+            return;
+        }
+
+        var message = "";
+
+        if(!PREVIOUS_PRICE.equals(BigDecimal.ZERO)) {
+            message = """
+                    %s
+                    current: %.2f
+                    previous: %.2f
+                    change: %.2f
+                    """.formatted(
+                            DateTimeUtils.convert(LocalDateTime.now()),
+                            currentPrice,
+                            PREVIOUS_PRICE,
+                            PREVIOUS_PRICE.subtract(currentPrice)
+                     );
+        } else {
+            message = """
+                    %s
+                    current: %.2f
+                    """.formatted(
+                            DateTimeUtils.convert(LocalDateTime.now()),
+                            currentPrice
+                    );
+        }
+
+        telegramService.sendMessage(message);
+        PREVIOUS_PRICE = currentPrice;
+    }
+
+    public void onTask_TrackingGoldPriceApi(String type) {
+        var date = DateTimeUtils.convertSimpleDate();
+        log.info("[cron] onTask_TrackingGoldPriceApi {} executed for {}", type, date);
+
+        this.onLogic_MarketHistoryData(
+                type,
+                date,
+                this.onApi_RetrievePrice(),
+                "USD"
+        );
+    }
+
+    public void onTask_TrackingGoldPriceCallBack(GoldPriceRequest request) {
 
         var date = DateTimeUtils.convertSimpleDate();
         var type = request.getStatus();
         var goldPrice = request.getPrice();
         var symbol = request.getSymbol();
 
-        log.info("[cron] onTask_TrackingGoldPrice {} executed for {}", type, date);
+        log.info("[callback cron] onTask_TrackingGoldPrice {} executed for {}", type, date);
 
+        this.onLogic_MarketHistoryData(
+                date,
+                type,
+                goldPrice,
+                symbol
+        );
+    }
+
+    private void onLogic_MarketHistoryData(String type, String date, BigDecimal goldPrice, String symbol) {
         if(TypeConstant.OPENED.equals(type)){
             MarketHistory marketHistory = MarketHistory.builder()
                     .date(date)
