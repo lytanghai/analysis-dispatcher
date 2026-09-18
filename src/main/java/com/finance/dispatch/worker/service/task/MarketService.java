@@ -49,8 +49,10 @@ public class MarketService {
         BigDecimal currentPrice = this.onApi_RetrievePrice();
 
         if(currentPrice.equals(BigDecimal.ZERO)) {
+            log.info("failed to fetch price");
             return;
         }
+        log.info("price {}", currentPrice);
 
         var message = "";
 
