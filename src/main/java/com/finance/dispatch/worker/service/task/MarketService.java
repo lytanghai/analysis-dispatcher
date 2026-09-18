@@ -57,14 +57,22 @@ public class MarketService {
         var message = "";
 
         if(!PREVIOUS_PRICE.equals(BigDecimal.ZERO)) {
+            var changeMsg = "";
+            var change = currentPrice.subtract(PREVIOUS_PRICE);
+
+            if (currentPrice.compareTo(PREVIOUS_PRICE) >= 0) {
+                changeMsg+= "+" + change;
+            } else {
+                changeMsg+= "-" + change;
+            }
             message = """
                     current: %.2f
                     previous: %.2f
-                    change: %.2f
+                    change: %s
                     """.formatted(
                             currentPrice,
                             PREVIOUS_PRICE,
-                            PREVIOUS_PRICE.subtract(currentPrice)
+                            changeMsg
                      );
         } else {
             message = """
