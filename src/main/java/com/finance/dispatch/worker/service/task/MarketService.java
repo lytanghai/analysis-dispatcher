@@ -42,12 +42,7 @@ public class MarketService {
             return BigDecimal.ZERO;
         }
 
-        if(response.getStatus() != 200) {
-            log.error("[onApi_RetrievePrice] Failed to retrieve price due to status != 200");
-            return BigDecimal.ZERO;
-        }
-
-        return response.getBody().getXau().getPrice();
+        return response.getXau().getPrice();
     }
 
     public void onTask_RetrievingPriceUpdate(){

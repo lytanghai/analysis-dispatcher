@@ -8,18 +8,8 @@ import java.math.BigDecimal;
 @Data
 public class ApiGoldPriceResponse {
 
-    @JsonProperty("status")
-    private Integer status;
-
-    @JsonProperty("body")
-    private Body body;
-
-    @Data
-    public static class Body {
-
-        @JsonProperty("xau")
-        private XAU xau;
-    }
+    @JsonProperty("xau")
+    private XAU xau;
 
     @Data
     public static class XAU {
