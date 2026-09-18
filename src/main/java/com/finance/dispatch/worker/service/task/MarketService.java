@@ -58,22 +58,18 @@ public class MarketService {
 
         if(!PREVIOUS_PRICE.equals(BigDecimal.ZERO)) {
             message = """
-                    %s
                     current: %.2f
                     previous: %.2f
                     change: %.2f
                     """.formatted(
-                            DateTimeUtils.convert(LocalDateTime.now()),
                             currentPrice,
                             PREVIOUS_PRICE,
                             PREVIOUS_PRICE.subtract(currentPrice)
                      );
         } else {
             message = """
-                    %s
                     current: %.2f
                     """.formatted(
-                            DateTimeUtils.convert(LocalDateTime.now()),
                             currentPrice
                     );
         }
