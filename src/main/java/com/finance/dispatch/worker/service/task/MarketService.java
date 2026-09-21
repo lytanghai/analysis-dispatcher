@@ -63,7 +63,7 @@ public class MarketService {
             if (currentPrice.compareTo(PREVIOUS_PRICE) >= 0) {
                 changeMsg+= "+" + change;
             } else {
-                changeMsg+= "-" + change;
+                changeMsg+= change;
             }
             message = """
                     current: %.2f

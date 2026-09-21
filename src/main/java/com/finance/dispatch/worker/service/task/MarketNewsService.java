@@ -51,8 +51,6 @@ public class MarketNewsService {
                 .filter(news -> news.getDate().toLocalDate().equals(today))
                 .toList();
 
-        BotMessageRequest botMessageRequest = new BotMessageRequest();
-
         var tgMessage = todayUsdNews.isEmpty()
                 ? "💵 <b>Today event</b>\n\nNo event today."
                 : """
@@ -91,7 +89,7 @@ public class MarketNewsService {
 
         if(Objects.isNull(marketNews)){
             log.info("MarketNews is null");
-            return List.of();
+            return this.retrieveForexFactory();
         }
         return marketNews;
     }

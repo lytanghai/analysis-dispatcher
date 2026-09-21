@@ -104,9 +104,4 @@ public class PublicController {
         );
     }
 
-    @GetMapping("/test-only")
-    public void test() {
-        marketNewsService.onTask_RetrievingDailyMarketEvent();
-    }
-
 }
