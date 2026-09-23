@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 @Data
 public class MarketPriceRequest {
 
+    @JsonProperty("symbol")
+    private String symbol;
+
     @JsonProperty("date")
     private String date;
 

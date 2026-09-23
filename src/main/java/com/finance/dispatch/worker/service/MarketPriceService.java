@@ -37,7 +37,7 @@ public class MarketPriceService {
                     MarketPrice marketPrice = new MarketPrice();
 
                     marketPrice.setDate(item.getDate());
-                    marketPrice.setSymbol(TypeConstant.XAU);
+                    marketPrice.setSymbol(Objects.isNull(item.getSymbol()) ? TypeConstant.XAU :  item.getSymbol());
                     marketPrice.setOpened(item.getOpened());
                     marketPrice.setClosed(item.getClosed());
                     marketPrice.setHighest(item.getHighest());
