@@ -6,6 +6,7 @@ import com.finance.dispatch.worker.dto.request.MarketPriceRequest;
 import com.finance.dispatch.worker.dto.response.MarketPriceResponse;
 import com.finance.dispatch.worker.dto.response.PageResponse;
 import com.finance.dispatch.worker.entity.MarketPrice;
+import com.finance.dispatch.worker.records.Insight;
 import com.finance.dispatch.worker.repository.MarketPriceRepository;
 import com.finance.dispatch.worker.repository.specification.MarketPriceSpecification;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,6 +86,54 @@ public class MarketPriceService {
                 .size(result.getSize())
                 .numberOfElements(result.getNumberOfElements())
                 .build();
+    }
+
+    public void clear() {
+        marketPriceRepository.deleteAll();
+    }
+
+    public List<Insight> insight(Integer days) {
+
+        if (days == null || days <= 0) {
+            days = 365;
+        }
+
+        List<MarketPrice> result = marketPriceRepository.findByDays(days);
+
+        Insight highest = result.stream()
+                .max(Comparator.comparing(MarketPrice::getHighest))
+                .map(m -> new Insight(
+                        m.getDate(),
+                        m.getHighest(),
+                        m.getLowest(),
+                        m.getChanged(),
+                        m.getEvent()
+                ))
+                .orElse(null);
+
+        Insight lowest = result.stream()
+                .min(Comparator.comparing(MarketPrice::getLowest))
+                .map(m -> new Insight(
+                        m.getDate(),
+                        m.getHighest(),
+                        m.getLowest(),
+                        m.getChanged(),
+                        m.getEvent()
+                ))
+                .orElse(null);
+
+        Insight mostChanged = result.stream()
+                .max(Comparator.comparing(MarketPrice::getChanged))
+                .map(m -> new Insight(
+                        m.getDate(),
+                        m.getHighest(),
+                        m.getLowest(),
+                        m.getChanged(),
+                        m.getEvent()
+                ))
+                .orElse(null);
+
+        return Arrays.asList(highest, lowest, mostChanged);
     }
 
 }
