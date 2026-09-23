@@ -138,7 +138,7 @@ public class MarketPriceService {
         Map<String,Insight> mapResult = new HashMap<>();
 
         mapResult.put("highest price - " + days, highest);
-        mapResult.put("lowest lowest - "+ days, lowest);
+        mapResult.put("lowest price - "+ days, lowest);
         mapResult.put("most changed - "+ days, mostChanged);
 
         return mapResult;
