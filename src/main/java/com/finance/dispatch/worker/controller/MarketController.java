@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -64,7 +65,7 @@ public class MarketController {
     }
 
     @GetMapping("/insight")
-    public List<Insight> insight(@RequestParam Integer days) {
+    public Map<String, Insight> insight(@RequestParam Integer days) {
         return marketPriceService.insight(days);
     }
 

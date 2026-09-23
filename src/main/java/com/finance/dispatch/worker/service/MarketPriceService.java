@@ -17,9 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -37,7 +38,7 @@ public class MarketPriceService {
                     MarketPrice marketPrice = new MarketPrice();
 
                     marketPrice.setDate(item.getDate());
-                    marketPrice.setSymbol(Objects.isNull(item.getSymbol()) ? TypeConstant.XAU :  item.getSymbol());
+                    marketPrice.setSymbol(Objects.isNull(item.getSymbol()) ? TypeConstant.XAU : item.getSymbol());
                     marketPrice.setOpened(item.getOpened());
                     marketPrice.setClosed(item.getClosed());
                     marketPrice.setHighest(item.getHighest());
@@ -92,7 +93,7 @@ public class MarketPriceService {
         marketPriceRepository.deleteAll();
     }
 
-    public List<Insight> insight(Integer days) {
+    public Map<String, Insight> insight(Integer days) {
 
         if (days == null || days <= 0) {
             days = 365;
@@ -122,6 +123,7 @@ public class MarketPriceService {
                 ))
                 .orElse(null);
 
+
         Insight mostChanged = result.stream()
                 .max(Comparator.comparing(MarketPrice::getChanged))
                 .map(m -> new Insight(
@@ -133,7 +135,13 @@ public class MarketPriceService {
                 ))
                 .orElse(null);
 
-        return Arrays.asList(highest, lowest, mostChanged);
+        Map<String,Insight> mapResult = new HashMap<>();
+
+        mapResult.put("highest price - " + days, highest);
+        mapResult.put("lowest lowest - "+ days, lowest);
+        mapResult.put("most changed - "+ days, mostChanged);
+
+        return mapResult;
     }
 
 }
