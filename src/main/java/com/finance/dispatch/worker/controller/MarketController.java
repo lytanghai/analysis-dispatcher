@@ -24,7 +24,7 @@ public class MarketController {
 
     private final MarketPriceService marketPriceService;
 
-    //give me the xau spot price in the last n days in json as this format:
+    //give me the xau spot price in the last n days in json as this format and sort by date as ascending:
     //if it has impact event on USD currency please include in field event:
     //[
     //    {
