@@ -1,6 +1,5 @@
 package com.finance.dispatch.worker.service;
 
-import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.entity.ScheduledJob;
 import com.finance.dispatch.worker.records.SchedulerConfigSnapshot;
 import com.finance.dispatch.worker.service.task.MarketNewsService;
@@ -59,12 +58,6 @@ public class SchedulerService {
         log.info("Executing scheduled job. id={}, name={}", job.getId(), job.getJobName());
         try {
             switch (job.getJobName()) {
-
-                case "OPENED_PRICE" ->
-                    marketService.onTask_TrackingGoldPriceApi(TypeConstant.OPENED);
-
-                case "CLOSED_PRICE" ->
-                        marketService.onTask_TrackingGoldPriceApi(TypeConstant.CLOSED);
 
                 case "MARKET_NEWS" ->
                         marketNewsService.onTask_RetrievingMarketNews();

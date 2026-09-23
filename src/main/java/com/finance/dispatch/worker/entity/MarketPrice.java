@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Builder
 @Entity
@@ -21,32 +20,34 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "market_history")
-public class MarketHistory {
+@Table(name = "market_price")
+public class MarketPrice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "symbol", nullable = false, unique = true)
+    @Column(name = "symbol")
     private String symbol;
 
-    @Column(name = "opened", nullable = false)
+    @Column(name = "date")
+    private String date;
+
+    @Column(name = "opened")
     private BigDecimal opened;
 
     @Column(name = "closed")
     private BigDecimal closed;
 
-    @Column(comment = "price_change")
-    private BigDecimal priceChange;
+    @Column(name = "highest")
+    private BigDecimal highest;
 
-    @Column(name = "date", nullable = false)
-    public String date;
+    @Column(name = "lowest")
+    private BigDecimal lowest;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "changed")
+    private BigDecimal changed;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
+    @Column(name = "event")
+    private String event;
 }
