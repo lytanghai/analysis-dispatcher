@@ -38,14 +38,14 @@ public class MarketNewsService {
     public List<MarketNews> onTask_RetrievingMarketNews() {
         log.info("[cache] onTask_RetrievingMarketNews");
 
-        return this.fetch()
+        return this.fetch(false)
                 .stream()
                 .filter(news -> "USD".equalsIgnoreCase(news.getCountry()))
                 .toList();
     }
 
     public void onTask_RetrievingDailyMarketEvent() {
-        List<MarketNews> marketNews = this.fetch();
+        List<MarketNews> marketNews = this.fetch(true);
 
         LocalDate today = LocalDate.now();
 
@@ -88,12 +88,16 @@ public class MarketNewsService {
         };
     }
 
-    public List<MarketNews> fetch() {
+    public List<MarketNews> fetch(boolean fetchNew) {
         List<MarketNews> marketNews = this.marketNewsCache().get(CacheConstant.THIS_WEEK, List.class);
 
         if(Objects.isNull(marketNews)){
             log.info("MarketNews is null");
-            return this.retrieveForexFactory();
+            if(fetchNew) {
+                return this.retrieveForexFactory();
+            } else {
+                return List.of();
+            }
         }
         return marketNews;
     }
