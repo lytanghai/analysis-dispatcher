@@ -15,8 +15,6 @@ on:
 #    # Saturday 00:00 Cambodia → 04:00 Cambodia
 #    - cron: "0,30 0-20 * * 6"
 
-  workflow_dispatch:
-
 jobs:
   update-gold-price:
     runs-on: ubuntu-latest
