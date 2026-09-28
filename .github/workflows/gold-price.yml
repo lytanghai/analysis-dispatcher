@@ -2,7 +2,8 @@ name: Query Gold Price
 
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 jobs:
   update-gold-price:
