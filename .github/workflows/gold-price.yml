@@ -2,17 +2,18 @@ name: Query Gold Price
 
 on:
   schedule:
-    # Monday 05:00 Cambodia → Tuesday 00:00 Cambodia
-    - cron: "0,30 22,23 * * 1"
-
-    # Tuesday → Thursday, all day
-    - cron: "0,30 * * * 2-4"
-
-    # Friday 00:00 Cambodia → Saturday 00:00 Cambodia
-    - cron: "0,30 * * * 5"
-
-    # Saturday 00:00 Cambodia → 04:00 Cambodia
-    - cron: "0,30 0-20 * * 6"
+    - cron: "*/2 * * * *"
+#    # Monday 05:00 Cambodia → Tuesday 00:00 Cambodia
+#    - cron: "0,30 22,23 * * 1"
+#
+#    # Tuesday → Thursday, all day
+#    - cron: "0,30 * * * 2-4"
+#
+#    # Friday 00:00 Cambodia → Saturday 00:00 Cambodia
+#    - cron: "0,30 * * * 5"
+#
+#    # Saturday 00:00 Cambodia → 04:00 Cambodia
+#    - cron: "0,30 0-20 * * 6"
 
   workflow_dispatch:
 
