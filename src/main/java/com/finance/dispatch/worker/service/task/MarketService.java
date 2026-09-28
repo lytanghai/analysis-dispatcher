@@ -3,6 +3,7 @@ package com.finance.dispatch.worker.service.task;
 import com.finance.dispatch.worker.config.properties.PublicUrlProperties;
 import com.finance.dispatch.worker.constant.TypeConstant;
 import com.finance.dispatch.worker.dto.response.ApiGoldPriceResponse;
+import com.finance.dispatch.worker.dto.response.GoldPriceResponse;
 import com.finance.dispatch.worker.service.TelegramService;
 import com.finance.dispatch.worker.util.RestClientHttpUtils;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +39,14 @@ public class MarketService {
         return response.getXau().getPrice();
     }
 
-    public void onTask_RetrievingPriceUpdate(){
-        BigDecimal currentPrice = this.onApi_RetrievePrice();
+    public void onTask_RetrievingPriceUpdate(GoldPriceResponse request){
+        BigDecimal currentPrice = request.getPrice();
 
         if(currentPrice.equals(BigDecimal.ZERO)) {
             log.info("failed to fetch price");
             return;
         }
+
         log.info("price {}", currentPrice);
 
         var message = "";

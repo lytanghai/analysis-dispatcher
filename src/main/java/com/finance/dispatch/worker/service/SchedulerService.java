@@ -65,10 +65,6 @@ public class SchedulerService {
                 case "DAILY_MARKET_EVENT" ->
                         marketNewsService.onTask_RetrievingDailyMarketEvent();
 
-                case "XAU_SPOT_PRICE_UPDATE" ->
-                    marketService.onTask_RetrievingPriceUpdate();
-
-
                 default ->
                         log.warn("Unknown scheduled job. id={}, name={}",
                                 job.getId(),

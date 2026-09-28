@@ -48,7 +48,7 @@ public class MarketReminder {
                 - %s at %s [%s]
                 """.formatted(
                         event.getTitle(),
-                        event.getDate().format(DateTimeFormatter.ofPattern("hh:mm a")),
+                        event.getDate().plusHours(7).format(DateTimeFormatter.ofPattern("hh:mm a")),
                         marketNewsService.getImpactEmoji(event.getImpact())
                 ))
                 .collect(Collectors.joining());

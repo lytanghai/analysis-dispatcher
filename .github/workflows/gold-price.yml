@@ -1,0 +1,34 @@
+name: Gold Price Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0,30 * * * *'
+
+jobs:
+  update-gold-price:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get XAU price
+        id: gold
+        run: |
+          response=$(curl -fsS https://api.gold-api.com/price/XAU)
+
+          echo "Gold API response:"
+          echo "$response"
+
+          symbol=$(echo "$response" | jq -r '.symbol')
+          price=$(echo "$response" | jq -r '.price')
+
+          echo "symbol=$symbol" >> "$GITHUB_OUTPUT"
+          echo "price=$price" >> "$GITHUB_OUTPUT"
+
+      - name: Send price to callback
+        run: |
+          curl -fsS -X POST "${{ secrets.GOLD_CALLBACK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "symbol": "${{ steps.gold.outputs.symbol }}",
+              "price": ${{ steps.gold.outputs.price }}
+            }'
