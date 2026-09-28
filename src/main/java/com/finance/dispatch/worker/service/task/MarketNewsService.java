@@ -31,6 +31,10 @@ public class MarketNewsService {
     private final PublicUrlProperties publicUrlProperties;
     private final RestClientHttpUtils restClientHttpUtils;
 
+    public void onManual_SaveMarketNews(List<MarketNews> marketNews) {
+        this.put(marketNews);
+    }
+
     public List<MarketNews> onTask_RetrievingMarketNews() {
         log.info("[cache] onTask_RetrievingMarketNews");
 

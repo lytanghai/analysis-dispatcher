@@ -4,6 +4,8 @@ import com.finance.dispatch.worker.dto.response.MarketNews;
 import com.finance.dispatch.worker.service.task.MarketNewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +17,11 @@ import java.util.List;
 public class CacheController {
 
     private final MarketNewsService marketNewsService;
+
+    @PostMapping("/manual/save-market-news")
+    public void onManual_SaveCacheMarketNews(@RequestBody List<MarketNews> marketNews) {
+        marketNewsService.onManual_SaveMarketNews(marketNews);
+    }
 
     @GetMapping("/fetch-market-event")
     public List<MarketNews> onCache_RetrievingMarketNews() {
