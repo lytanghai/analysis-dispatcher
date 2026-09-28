@@ -1,21 +1,46 @@
-name: Gold Price Update
+name: Gold Price Update CallBack
 
 on:
-  workflow_dispatch:
   schedule:
     - cron: '0,30 * * * *'
+
+  workflow_dispatch:
 
 jobs:
   update-gold-price:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check Cambodia trading hours
+        id: check_time
+        run: |
+          HOUR=$(TZ=Asia/Phnom_Penh date +%H)
+          MINUTE=$(TZ=Asia/Phnom_Penh date +%M)
+          DAY=$(TZ=Asia/Phnom_Penh date +%u)
+
+          echo "Cambodia time: $(TZ=Asia/Phnom_Penh date)"
+
+          # Monday (1) 05:00 onward
+          # Tuesday-Friday: all day
+          # Saturday (6) until 04:00
+          if [[ "$DAY" -ge 1 && "$DAY" -le 5 ]]; then
+            if [[ "$DAY" -eq 1 && "$HOUR" -lt 05 ]]; then
+              echo "run=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "run=true" >> "$GITHUB_OUTPUT"
+            fi
+          elif [[ "$DAY" -eq 6 && "$HOUR" -lt 04 ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Get XAU price
+        if: steps.check_time.outputs.run == 'true'
         id: gold
         run: |
           response=$(curl -fsS https://api.gold-api.com/price/XAU)
 
-          echo "Gold API response:"
           echo "$response"
 
           symbol=$(echo "$response" | jq -r '.symbol')
@@ -25,6 +50,7 @@ jobs:
           echo "price=$price" >> "$GITHUB_OUTPUT"
 
       - name: Send price to callback
+        if: steps.check_time.outputs.run == 'true'
         run: |
           curl -fsS -X POST "${{ secrets.GOLD_CALLBACK_URL }}" \
             -H "Content-Type: application/json" \
