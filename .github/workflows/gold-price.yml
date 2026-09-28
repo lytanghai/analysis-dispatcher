@@ -3,54 +3,15 @@ name: Query Gold Price
 on:
   schedule:
     - cron: "*/5 * * * *"
+
   workflow_dispatch:
 
 jobs:
-  update-gold-price:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Fetch gold price
-        id: gold
-        shell: bash
+      - name: Test automatic trigger
         run: |
-          set -e
-
-          RESPONSE=$(curl -fsS \
-            --connect-timeout 10 \
-            --max-time 30 \
-            "https://api.gold-api.com/price/XAU")
-
-          echo "Gold API response:"
-          echo "$RESPONSE"
-
-          SYMBOL=$(echo "$RESPONSE" | jq -r '.symbol')
-          PRICE=$(echo "$RESPONSE" | jq -r '.price')
-
-          echo "symbol=$SYMBOL" >> "$GITHUB_OUTPUT"
-          echo "price=$PRICE" >> "$GITHUB_OUTPUT"
-
-      - name: Send gold price to Render
-        shell: bash
-        run: |
-          set -e
-
-          PAYLOAD=$(cat <<EOF
-          {
-            "symbol": "${{ steps.gold.outputs.symbol }}",
-            "price": ${{ steps.gold.outputs.price }}
-          }
-          EOF
-          )
-
-          echo "Sending gold price to Render..."
-          echo "Payload: $PAYLOAD"
-
-          curl -fsS \
-            --connect-timeout 10 \
-            --max-time 30 \
-            -X POST "${{ secrets.GOLD_CALLBACK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
-
-          echo "Render callback successful."
+          echo "Workflow triggered!"
+          date -u
