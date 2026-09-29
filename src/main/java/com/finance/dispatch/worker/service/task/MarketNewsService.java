@@ -16,6 +16,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public class MarketNewsService {
 
           %s
           """.formatted(
-                todayUsdNews.getFirst().getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                todayUsdNews.getFirst().getDate().withOffsetSameInstant(ZoneOffset.ofHours(7)).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                 todayUsdNews.stream()
                         .map(news -> """
                                 🕐 %s — %s | %s %s

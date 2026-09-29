@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class MarketReminder {
                 - %s at %s [%s]
                 """.formatted(
                         event.getTitle(),
-                        event.getDate().plusHours(7).format(DateTimeFormatter.ofPattern("hh:mm a")),
+                        event.getDate().withOffsetSameInstant(ZoneOffset.ofHours(7)).format(DateTimeFormatter.ofPattern("hh:mm a")),
                         marketNewsService.getImpactEmoji(event.getImpact())
                 ))
                 .collect(Collectors.joining());
