@@ -38,6 +38,8 @@ public class MarketReminder {
         OffsetDateTime current = OffsetDateTime.now(zone);
         OffsetDateTime next30Minutes = current.plusMinutes(30);
 
+        log.info("checking for further events currentDate: {}", current);
+
         var upcomingEvents = marketNewsService.onTask_RetrievingMarketNews().stream()
                 .filter(event -> {
                     OffsetDateTime eventTime = event.getDate();
